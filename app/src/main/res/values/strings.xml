@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Dango Wallpaper</string>
+    <string-array name="dango_colors">
+        <item name="blue">Blue</item>
+        <item name="black">Black</item>
+        <item name="pink">Pink</item>
+        <item name="purple">Purple</item>
+        <item name="yellow">Yellow</item>
+    </string-array>
 </resources>

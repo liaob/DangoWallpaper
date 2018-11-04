@@ -1,5 +1,7 @@
 package io.github.liaob.dangowallpaper;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Movie;
 import android.os.Handler;
@@ -8,38 +10,40 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class DangoWallpaperService extends WallpaperService {
+
     @Override
     public Engine onCreateEngine() {
-        try {
-            Movie movie = Movie.decodeStream(
-                    getResources().getAssets().open(""));
 
-            return new DangoWallpaperEngine(movie);
-        } catch (IOException e) {
-            Log.d("GIF", "Could not load asset");
-            return null;
+        int resource = getColorResource();
 
-        }
-
+        @SuppressLint("ResourceType") Movie movie = Movie.decodeStream(
+                getResources().openRawResource(resource));
+        return new DangoWallpaperEngine(movie);
     }
 
     private class DangoWallpaperEngine extends Engine {
-
         private SurfaceHolder holder;
         private Movie movie;
         private boolean visible;
         private Handler handler;
+        private int width;
+        private int height;
+        private float scalex;
+        private float scaley;
 
         public DangoWallpaperEngine(Movie movie){
-                this.movie = movie;
-                handler = new Handler();
-            }
+            this.movie  = movie;
+            handler = new Handler();
+        }
 
         public void onCreate(SurfaceHolder surfaceHolder) {
             super.onCreate(surfaceHolder);
             this.holder = surfaceHolder;
+            width = getResources().getDisplayMetrics().widthPixels;
+            height = getResources().getDisplayMetrics().heightPixels;
         }
 
         private Runnable drawGIF = new Runnable() {
@@ -52,14 +56,13 @@ public class DangoWallpaperService extends WallpaperService {
             if (visible) {
                 Canvas canvas = holder.lockCanvas();
                 canvas.save();
-                // Adjust size and position so that
-                // the image looks good on your screen
-                canvas.scale(3f, 3f);
-                movie.draw(canvas, -100, 0);
+                scalex = width / (1f * movie.width());
+                scaley = height / (1f*movie.height());
+                canvas.scale(scalex, scaley);
+                movie.draw(canvas, 0, 0);
                 canvas.restore();
                 holder.unlockCanvasAndPost(canvas);
                 movie.setTime((int) (System.currentTimeMillis() % movie.duration()));
-
                 handler.removeCallbacks(drawGIF);
                 handler.postDelayed(drawGIF, 0);
             }
@@ -80,6 +83,10 @@ public class DangoWallpaperService extends WallpaperService {
             super.onDestroy();
             handler.removeCallbacks(drawGIF);
         }
+    }
+
+    public int getColorResource(){
+        return R.drawable.bluedango;
     }
 }
 
