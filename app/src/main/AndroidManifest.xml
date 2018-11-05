@@ -24,6 +24,10 @@
                 android:resource="@xml/dango_wallpaper">
             </meta-data>
 
+            <meta-data
+                android:name="com.google.android.gms.ads.ca-app-pub-1617721984588470~1135367148"
+                android:value="ca-app-pub-1617721984588470~1135367148"/>
+
         </service>
 
         <activity android:name=".MainActivity">

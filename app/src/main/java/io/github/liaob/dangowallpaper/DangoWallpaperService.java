@@ -2,6 +2,7 @@ package io.github.liaob.dangowallpaper;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Movie;
 import android.os.Handler;
@@ -14,11 +15,11 @@ import java.io.InputStream;
 
 public class DangoWallpaperService extends WallpaperService {
 
+    SharedPreferences sharedPreferences;
+
     @Override
     public Engine onCreateEngine() {
-
         int resource = getColorResource();
-
         @SuppressLint("ResourceType") Movie movie = Movie.decodeStream(
                 getResources().openRawResource(resource));
         return new DangoWallpaperEngine(movie);
@@ -72,6 +73,7 @@ public class DangoWallpaperService extends WallpaperService {
         public void onVisibilityChanged(boolean visible) {
             this.visible = visible;
             if (visible) {
+                this.movie = Movie.decodeStream(getResources().openRawResource(getColorResource()));
                 handler.post(drawGIF);
             } else {
                 handler.removeCallbacks(drawGIF);
@@ -86,7 +88,23 @@ public class DangoWallpaperService extends WallpaperService {
     }
 
     public int getColorResource(){
-        return R.drawable.bluedango;
+        sharedPreferences = getSharedPreferences("Dango", MODE_PRIVATE);
+        String resource = sharedPreferences.getString("color","blue");
+
+        switch (resource){
+            case "Blue":
+                return R.drawable.bluedango;
+            case "Pink":
+                return R.drawable.pinkdango;
+            case "Black":
+                return R.drawable.blackdango;
+            case "Yellow":
+                return R.drawable.yellowdango;
+            case "Purple":
+                return R.drawable.purpledango;
+            default:
+                return R.drawable.bluedango;
+        }
     }
 }
 
